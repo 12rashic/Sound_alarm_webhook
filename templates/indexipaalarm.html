@@ -72,7 +72,7 @@
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background-color: red;
+      background-color: darkmagenta;
       z-index: 999;
       animation: flashScreen 1s linear infinite;
     }
@@ -91,7 +91,7 @@
     <button id="alarmBtn" class="alarm-button">IPA Alarm</button>
     <button id="testBtn" class="test-button" type="button">Test Sound</button>
   </div>
-  <audio id="alertAudio" src="{{ url_for('static', filename='siren-alert-96052.mp3') }}"></audio>
+  <audio id="alertAudio" src="{{ url_for('static', filename='mixkit-siren-tone-1649.wav') }}"></audio>
 
   <script>
     const socket = io();

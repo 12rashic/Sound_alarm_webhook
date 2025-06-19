@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>IPA Alarm Dashboard</title>
+  <title>NanoBSCrm Dashboard</title>
   <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
   <style>
@@ -50,18 +50,18 @@
       pointer-events: none;
     }
     .alarm-button.active {
-      background-color: #ff1744;
+      background-color: #bdff17;
       color: white;
       box-shadow: 0 0 20px 8px rgba(255, 23, 68, 0.8);
       animation: glow 1s ease-in-out infinite alternate;
     }
     .test-button {
-      background-color: #f48fb1;
+      background-color: #8b9802;
       color: white;
       border-color: #9c0d38;
     }
     .test-button:hover {
-      background-color: #ec407a;
+      background-color: #abdf6c;
     }
     @keyframes glow {
       from { box-shadow: 0 0 10px #ff1744; }
@@ -86,7 +86,7 @@
   </style>
 </head>
 <body>
-  <h1>🚨 IPA Alarm Dashboard</h1>
+  <h1>🚨 NanoBSC Alarm Dashboard</h1>
   <div class="container">
     <button id="alarmBtn" class="alarm-button">IPA Alarm</button>
     <button id="testBtn" class="test-button" type="button">Test Sound</button>
@@ -99,6 +99,9 @@
     const testBtn = document.getElementById("testBtn");
     const alertAudio = document.getElementById("alertAudio");
 
+    let alarmActive = false;
+    let overlay = null;
+
     function unlockAudio() {
       alertAudio.play().then(() => {
         alertAudio.pause();
@@ -110,7 +113,7 @@
 
     function flashGlow() {
       alarmBtn.classList.add("active");
-      setTimeout(() => alarmBtn.classList.remove("active"), 5000);
+      alarmActive = true;
     }
 
     function playSound() {
@@ -119,10 +122,23 @@
     }
 
     function showFlashOverlay() {
-      const overlay = document.createElement("div");
-      overlay.className = "overlay";
-      document.body.appendChild(overlay);
-      setTimeout(() => overlay.remove(), 5000);
+      if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.className = "overlay";
+        document.body.appendChild(overlay);
+      }
+    }
+
+    function stopAlarmEffects() {
+      alertAudio.pause();
+      alertAudio.currentTime = 0;
+      alarmBtn.classList.remove("active");
+      alarmActive = false;
+
+      if (overlay) {
+        overlay.remove();
+        overlay = null;
+      }
     }
 
     testBtn.addEventListener("click", () => {
@@ -138,6 +154,8 @@
         showFlashOverlay();
       }
     });
+
+    socket.on("alarm_stopped", stopAlarmEffects);
   </script>
 </body>
 </html>

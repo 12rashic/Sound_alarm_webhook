@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>TANGO Alarm Dashboard</title>
-  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+  <title>SMSC Alarm Dashboard</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -44,35 +44,35 @@
       user-select: none;
     }
     .alarm-button {
-      background-color: #e0f7fa;
-      color: #004d40;
+      background-color: #ffe5ec;
+      color: #9c0d38;
       cursor: default;
       pointer-events: none;
     }
     .alarm-button.active {
-      background-color: #00acc1;
+      background-color: #ff1744;
       color: white;
-      box-shadow: 0 0 20px 8px rgba(0, 172, 193, 0.8);
+      box-shadow: 0 0 20px 8px rgba(255, 23, 68, 0.8);
       animation: glow 1s ease-in-out infinite alternate;
     }
     .test-button {
-      background-color: #80deea;
-      color: #004d40;
-      border-color: #004d40;
+      background-color: #f48fb1;
+      color: white;
+      border-color: #9c0d38;
     }
     .test-button:hover {
-      background-color: #4dd0e1;
+      background-color: #ec407a;
     }
     @keyframes glow {
-      from { box-shadow: 0 0 10px #00acc1; }
-      to { box-shadow: 0 0 20px #00bcd4; }
+      from { box-shadow: 0 0 10px #ff1744; }
+      to { box-shadow: 0 0 20px #ff0033; }
     }
     .overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background-color: blue;
+      background-color: darkred;
       z-index: 999;
       animation: flashScreen 1s linear infinite;
     }
@@ -86,31 +86,40 @@
   </style>
 </head>
 <body>
-  <h1>🚨 TANGO Alarm Dashboard</h1>
+  <h1>🚨 SMSC Alarm Dashboard</h1>
   <div class="container">
-    <button id="alarmBtn" class="alarm-button">TANGO Alarm</button>
+    <button id="alarmBtn" class="alarm-button">Tango Alarm</button>
     <button id="testBtn" class="test-button" type="button">Test Sound</button>
   </div>
-  <audio id="alertAudio" src="{{ url_for('static', filename='siren-alert-96052.mp3') }}"></audio>
+  <audio id="alertAudio" src="{{ url_for('static', filename='siren-alert-96052.mp3') }}" ></audio>
 
+
+  <!-- JavaScript logic (must be in separate script block) -->
   <script>
     const socket = io();
     const alarmBtn = document.getElementById("alarmBtn");
     const testBtn = document.getElementById("testBtn");
     const alertAudio = document.getElementById("alertAudio");
 
+    let alarmActive = false;
+    let overlay = null;
+
     function unlockAudio() {
-      alertAudio.play().then(() => {
-        alertAudio.pause();
-        alertAudio.currentTime = 0;
-      }).catch(() => {});
-      document.body.removeEventListener('click', unlockAudio);
-    }
-    document.body.addEventListener('click', unlockAudio);
+  alertAudio.play().then(() => {
+    alertAudio.pause();
+    alertAudio.currentTime = 0;
+    console.log("🔓 Audio unlocked");
+  }).catch((err) => {
+    console.warn("🔒 Audio block:", err);
+  });
+  document.body.removeEventListener('click', unlockAudio);
+}
+document.body.addEventListener('click', unlockAudio);
+
 
     function flashGlow() {
       alarmBtn.classList.add("active");
-      setTimeout(() => alarmBtn.classList.remove("active"), 5000);
+      alarmActive = true;
     }
 
     function playSound() {
@@ -119,10 +128,23 @@
     }
 
     function showFlashOverlay() {
-      const overlay = document.createElement("div");
-      overlay.className = "overlay";
-      document.body.appendChild(overlay);
-      setTimeout(() => overlay.remove(), 5000);
+      if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.className = "overlay";
+        document.body.appendChild(overlay);
+      }
+    }
+
+    function stopAlarmEffects() {
+      alertAudio.pause();
+      alertAudio.currentTime = 0;
+      alarmBtn.classList.remove("active");
+      alarmActive = false;
+
+      if (overlay) {
+        overlay.remove();
+        overlay = null;
+      }
     }
 
     testBtn.addEventListener("click", () => {
@@ -138,6 +160,8 @@
         showFlashOverlay();
       }
     });
+
+    socket.on("alarm_stopped", stopAlarmEffects);
   </script>
 </body>
 </html>

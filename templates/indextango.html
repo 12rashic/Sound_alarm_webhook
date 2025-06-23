@@ -90,6 +90,17 @@
   <div class="container">
     <button id="alarmBtn" class="alarm-button">Tango Alarm</button>
     <button id="testBtn" class="test-button" type="button">Test Sound</button>
+
+    <div style="display: flex; gap: 10px; flex-direction: column; align-items: center;">
+      <select id="time-range" style="padding: 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc;">
+        <option value="7">7 Days</option>
+        <option value="30">30 Days</option>
+      </select>
+    
+      <button id="export-button" style="padding: 10px 20px; font-size: 16px; border-radius: 8px; background-color: #444; color: white; border: none; cursor: pointer;">
+        Export/Download
+      </button>
+    </div>
   </div>
   <audio id="alertAudio" src="{{ url_for('static', filename='siren-alert-96052.mp3') }}" ></audio>
 
@@ -162,6 +173,27 @@ document.body.addEventListener('click', unlockAudio);
     });
 
     socket.on("alarm_stopped", stopAlarmEffects);
+
+    document.getElementById("time-range").addEventListener("change", function () {
+    const selectedDays = this.value;
+    console.log("Selected time range:", selectedDays, "days");
+  });
+
+  // Export/Download button functionality
+  document.getElementById("export-button").addEventListener("click", function () {
+    const selectedDays = document.getElementById("time-range").value;
+    const data = `Exported alarm data for the last ${selectedDays} days`;
+    const blob = new Blob([data], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `alarm_export_${selectedDays}_days.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+    
+
+  
   </script>
 </body>
 </html>

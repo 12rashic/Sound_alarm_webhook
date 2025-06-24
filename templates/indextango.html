@@ -180,20 +180,27 @@ document.body.addEventListener('click', unlockAudio);
   });
 
   // Export/Download button functionality
-  document.getElementById("export-button").addEventListener("click", function () {
+ /* document.getElementById("export-button").addEventListener("click", function () {
     const selectedDays = document.getElementById("time-range").value;
     const data = `Exported alarm data for the last ${selectedDays} days`;
-    const blob = new Blob([data], { type: "text/plain" });
+    const blob = new Blob([data]);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `alarm_export_${selectedDays}_days.txt`;
+    a.download = `alarm_export_${selectedDays}_days.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  });
-    
+  });*/
 
-  
+  document.getElementById("export-button").addEventListener("click", function () {
+  const selectedDays = document.getElementById("time-range").value;
+  window.location.href = `/download/smsc?days=${selectedDays}`;
+});
+
+  function downloadReport() {
+    const days = 3;  // or make this dynamic based on user selection
+    window.location.href = `/download/nanobsc?days=${days}`;
+}  
   </script>
 </body>
 </html>

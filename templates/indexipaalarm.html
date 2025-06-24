@@ -175,7 +175,7 @@
   });
 
   // Export/Download button functionality
-  document.getElementById("export-button").addEventListener("click", function () {
+/*  document.getElementById("export-button").addEventListener("click", function () {
     const selectedDays = document.getElementById("time-range").value;
     const data = `Exported alarm data for the last ${selectedDays} days`;
     const blob = new Blob([data], { type: "text/plain" });
@@ -185,7 +185,13 @@
     a.download = `alarm_export_${selectedDays}_days.txt`;
     a.click();
     URL.revokeObjectURL(url);
-  });
+  });*/
+
+  document.getElementById("export-button").addEventListener("click", function () {
+  const selectedDays = document.getElementById("time-range").value;
+  window.location.href = `/download/nanobsc?days=${selectedDays}`;
+});
+
   </script>
 </body>
 </html>
